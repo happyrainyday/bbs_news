@@ -1,0 +1,41 @@
+<div class="pull-right">
+	<a href="#!/create" class="btn btn-default"  title="Create"><span class="fa fa-plus"></span></a>
+</div>
+<div class="page-header">
+	<h3>Hot Topics</h3>
+</div>
+
+<div class="col-md-12">
+		<p class="alert alert-info">You are free to express their opinion, but please respect the local laws to ensure that does not
+		 involve insulting remarks to others</p>
+</div>
+<hr/>
+<div ng-repeat="newsEntry in newsEntries">
+	<hr />
+	<div class="pull-right">
+		<a href="" ng-click="deleteEntry(newsEntry.id)"
+			class="btn btn-xs btn-default" ng-show="hasRole('ROLE_ADMIN')"
+			title="delete"><span class="fa fa-trash-o"></span></a> <a
+			href="#!/edit/{{newsEntry.id}}" class="btn btn-xs btn-default"
+			ng-show="hasRole('ROLE_ADMIN')" title="edit"><span
+			class="fa fa-pencil"></span></a>
+	</div>
+	<h4>
+		<span class="username">{{newsEntry.user.name}}</span><span
+			class="liulan common">浏览量{{newsEntry.pageViews}} &nbsp;&nbsp;<a
+			href="#!/edit/{{newsEntry.id}}">牛评论 {{newsEntry.commentsNum}}</a></span> <span
+			class="pull-right common">发表于 {{newsEntry.date |
+			date:'yyyy-MM-dd HH:mm:ss'}}</span>
+	</h4>
+	<a href="#!/edit/{{newsEntry.id}}"><p class="comment1">{{newsEntry.content
+			| limitToNum:100}}</p></a> <span class="pull-right like"><a href=""
+		ng-click="updateUpVotes(newsEntry.id, $index)">赞</a>({{newsEntry.upVotes}})<span
+		class="vs">|</span><a href=""
+		ng-click="updateDownVotes(newsEntry.id, $index)">踩</a>({{newsEntry.downVotes}})</span>
+	<br />
+</div>
+
+<div class="col-md-12">
+	    <tm-pagination conf="paginationConf"></tm-pagination>
+</div>
+<hr />

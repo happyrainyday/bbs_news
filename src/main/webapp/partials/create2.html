@@ -1,0 +1,11 @@
+<div id="replyTo" ng-show="showReply" 
+		style="width: 100%; height: 170px; border: 1px solid #999; margin-top: 10px;">
+		<div class="reply">
+			<textarea ng-model="replyContent" id="content" class="form-control" rows="5"
+				required ng-minlength="5"></textarea>
+			<button type="submit" class="btn btn-primary replyBtn"
+				ng-click="reply()">
+				<span class="fa fa-check"></span> Reply
+			</button>
+		</div>
+	</div>

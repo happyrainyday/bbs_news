@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="net.dontdrinkandroot.example.angularrestspringsecurity.dao.user.UserMapper">
+	
+	<resultMap id="BaseResultMap" type="User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="black" jdbcType="BIT" property="black" />
+  </resultMap>
+
+	<resultMap id="UserAndRoleMap" type="net.dontdrinkandroot.example.angularrestspringsecurity.transfer.UserAndRole" extends="BaseResultMap">
+		<!-- 配置映射用户和上面的一样，继承上面的即可 -->
+		<!-- 配置关联的用户角色信息 -->
+		<collection property="userRoleList" ofType="UserRole">
+			<result column="User_id" property="userId" jdbcType="BIGINT" />
+			<result column="roles" property="roles" jdbcType="INTEGER" />
+		</collection>
+	</resultMap>
+	
+	  <sql id="Base_Column_List">
+    id, name, password, create_date, update_date, black
+  </sql>
+	
+	<select id="selectByUsername" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		where name = #{name,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getUserList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user
+	</select>
+    
+    <!-- 分页并且是一对多映射关系 -->
+    <select id="getUserPageList" parameterType="Map" resultMap="UserAndRoleMap">
+		select
+		userinfo.*,
+		role.roles
+		from 
+		user as userinfo, user_roles as role where userinfo.id = role.User_id
+		order by userinfo.create_date desc
+		limit
+		#{pageIndex,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+    <!-- 获取总页数 -->
+	<select id="getUserNum" resultType="java.lang.Integer">
+		select
+		COUNT(DISTINCT(user.id)) as total_num
+		from 
+		user, 
+		user_roles
+	    where user.id = user_roles.User_id
+	</select>
+	
+	<insert id="insert"
+		parameterType="User">
+		insert into user (id, name, password, create_date, black
+		)
+		values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR}, #{createDate, jdbcType=TIMESTAMP}, #{black, jdbcType=BIT}
+		)
+
+		<!-- 将插入数据的主键返回，返回到user对象中 -->
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from user
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="User">
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="black != null">
+        black,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="black != null">
+        #{black,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="User">
+    update user
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="black != null">
+        black = #{black,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>  
+  
+  <update id="updateByUsernameSelective" parameterType="User">
+    update user
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="black != null">
+        black = #{black,jdbcType=BIT},
+      </if>
+    </set>
+    where name = #{name,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="User">
+    update user
+    set name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      black = #{black,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

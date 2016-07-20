@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="net.dontdrinkandroot.example.angularrestspringsecurity.dao.role.RolesMapper" >
+  <resultMap id="BaseResultMap" type="net.dontdrinkandroot.example.angularrestspringsecurity.model.Roles" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="roles_desc" property="rolesDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, roles_desc
+  </sql>
+  
+  <select id="getRolesList" resultMap="BaseResultMap">
+     select 
+     <include refid="Base_Column_List" />
+     from roles
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from roles
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from roles
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.Roles" >
+    insert into roles (id, roles_desc)
+    values (#{id,jdbcType=INTEGER}, #{rolesDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.Roles" >
+    insert into roles
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="rolesDesc != null" >
+        roles_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rolesDesc != null" >
+        #{rolesDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.Roles" >
+    update roles
+    <set >
+      <if test="rolesDesc != null" >
+        roles_desc = #{rolesDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.Roles" >
+    update roles
+    set roles_desc = #{rolesDesc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

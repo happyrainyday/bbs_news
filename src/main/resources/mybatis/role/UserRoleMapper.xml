@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="net.dontdrinkandroot.example.angularrestspringsecurity.dao.role.UserRoleMapper">
+	<resultMap id="BaseResultMap"
+		type="net.dontdrinkandroot.example.angularrestspringsecurity.model.UserRole">
+		<result column="User_id" property="userId" jdbcType="BIGINT" />
+		<result column="roles" property="roles" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		User_id, roles
+	</sql>
+
+	<select id="selectRoleByUid" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user_roles where User_id = #{userId, jdbcType=BIGINT}
+	</select>
+
+	<insert id="insert"
+		parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.UserRole">
+		insert into user_roles (User_id, roles)
+		values (#{userId,jdbcType=BIGINT}, #{roles,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="net.dontdrinkandroot.example.angularrestspringsecurity.model.UserRole">
+		insert into user_roles
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				User_id,
+			</if>
+			<if test="roles != null">
+				roles,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="roles != null">
+				#{roles,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+</mapper>

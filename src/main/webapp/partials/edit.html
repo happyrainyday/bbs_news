@@ -1,0 +1,110 @@
+<div class="page-header">
+	<h3>Comment</h3>
+</div>
+
+<form class="form-horizontal">
+	<div class="form-group">
+<!-- 		<label class="control-label col-sm-2" for="content">Content</label> -->
+		<div class="col-md-12">
+			<p class="alert alert-info">{{newsEntry.content}}</p>
+		</div>
+		<hr/>
+		<span class="tips">文明上网理性发言，请遵守新闻评论服务协议</span>
+		<div class="col-sm-12 comment">
+			<textarea ng-model="content" id="content" class="form-control" rows="5"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<button type="submit" class="btn btn-primary" ng-click="save()"><span class="fa fa-check"></span> Comment</button>
+		</div>
+	</div>
+</form>
+<span class="all-title">全部评论</span>
+<hr/>
+<div ng-repeat="comment in comments">
+	<span class="pull-left" class="col-md-12"><span class="username">{{comment.user.name}}</span>
+		&nbsp;&nbsp;<span class="common">发表于{{comment.createDate |
+			timeFormat}}前</span></span> <br />
+	<p class="comment1">{{comment.comment}}</p>
+
+	<span class="pull-left" class="common"><a href=""
+		ng-click="updateUpVotes(comment.id, $index)">赞({{comment.upVotes}})</a>&nbsp;&nbsp;&nbsp;<a
+		 data-target="#myModal1" data-toggle="modal" href="" ng-click="setIndex($index)">回复</a>&nbsp;&nbsp;&nbsp;<a href=""
+		data-target="#myModal" data-toggle="modal" ng-click="showReply(comment.id)">查看回复({{comment.replyNum}})</a></span> <br />
+	 
+<!-- 	<div id="replyTo" ng-show="showReply" -->
+<!-- 		style="width: 100%; height: 170px; border: 1px solid #999; margin-top: 10px;"> -->
+<!-- 		<div class="reply"> -->
+<!-- 			<textarea ng-model="replyContent" id="content" class="form-control" rows="5" -->
+<!-- 				required ng-minlength="5"></textarea> -->
+<!-- 			<button type="submit" class="btn btn-primary replyBtn" -->
+<!-- 				ng-click="reply()"> -->
+<!-- 				<span class="fa fa-check"></span> Reply -->
+<!-- 			</button> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+
+
+	<hr />
+     
+</div>
+
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog"
+		tabindex="-1" class="modal fade" bs-popup="" ng-model="test"
+		id="myModal" style="display: none;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header alert-info">
+					<button aria-hidden="true" data-dismiss="modal" class="close"
+						type="button">×</button>
+					<h4 id="myModalLabel" class="modal-title">{{reply.data.comment}}</h4>
+				</div>
+				<div class="modal-body">
+					<div ng-repeat="reply1 in replies">
+					<hr/>
+						<span class="pull-left" class="col-md-12"><span
+							class="username">{{reply1.user.name}}</span> &nbsp;&nbsp;<span
+							class="common">发表于{{reply1.createDate | timeFormat}}前</span></span> <br />
+						<p class="comment1">{{reply1.comment}}</p>
+					</div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+
+<div aria-hidden="true" aria-labelledby="myModalLabel1" role="dialog"
+		tabindex="-1" class="modal fade" bs-popup="" ng-model="test"
+		id="myModal1" style="display: none;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header alert-info">
+					<button aria-hidden="true" data-dismiss="modal" class="close"
+						type="button">×</button>
+					<h4 id="myModalLabel1" class="modal-title">回复</h4>
+				</div>
+				<div class="modal-body">
+					<div id="replyTo" 
+						style="width: 100%; height: 170px; border: 1px solid #999; margin-top: 10px;">
+						<div class="reply">
+							<textarea ng-model="replyContent" id="replyContent"
+								class="form-control" rows="5"></textarea>
+							<button aria-hidden="true" data-dismiss="modal"  type="type" class="btn btn-primary replyBtn"
+								ng-click="replyComment()">
+								<span class="fa fa-check"></span> Reply
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+ 
+
+
