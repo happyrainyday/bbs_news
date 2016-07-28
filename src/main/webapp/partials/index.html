@@ -25,7 +25,8 @@
 			class="liulan common">浏览量{{newsEntry.pageViews}} &nbsp;&nbsp;<a
 			href="#!/edit/{{newsEntry.id}}">牛评论 {{newsEntry.commentsNum}}</a></span> <span
 			class="pull-right common">发表于 {{newsEntry.date |
-			date:'yyyy-MM-dd HH:mm:ss'}}</span>
+			date:'yyyy-MM-dd HH:mm:ss'}}</span>&nbsp;&nbsp;
+			<span style="color:red; font-weight:900;" ng-show="newsEntry.weight==100">已置顶</span>
 	</h4>
 	<a href="#!/edit/{{newsEntry.id}}"><p class="comment1">{{newsEntry.content
 			| limitToNum:100}}</p></a> <span class="pull-right like">

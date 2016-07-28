@@ -330,7 +330,7 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
 	$scope.edit = true;
 	$scope.error = false;
 	$scope.incomplete = false;
-	$scope.order_search = 'name_ty';
+//	$scope.order_search = 'name_ty';
 	
    //	异步回调
 	UserService.roles(function(roles){
