@@ -8,6 +8,15 @@ app.filter('limitToNum', function() {
       return input;  
    };  
  });
+   
+
+//    自定义过滤器的格式
+//    app.filter('filter(过滤器)名称',function(){   
+//    return function(需要过滤的对象,过滤器参数1,过滤器参数2,...){       
+//               //...执行业务逻辑代码        
+//               return 处理后的对象;    
+//     }
+//}); 
 
 app.filter('timeFormat',function(){
 	return function(time){

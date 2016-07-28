@@ -179,6 +179,20 @@ function IndexController($scope, NewsService) {
 			$scope.newsEntries[index].downVotes = $scope.downVotes;
 		});
 	};
+	
+	// 置顶
+	$scope.stick = function(id){
+		NewsService.stick({id:id, action:'stick', oper: '1'},{}, function(){
+			$scope.getNewsPageList();
+		});
+	};
+	
+	// 取消置顶
+	$scope.cancelStick = function(id){
+		NewsService.stick({id:id, action:'stick', oper: '0'},{}, function(){
+			$scope.getNewsPageList();
+		});
+	}
 };
 
 
@@ -259,20 +273,25 @@ function LoginController($scope, $rootScope, $location, $cookieStore, UserServic
 	
 	//一般用httpCode来判断异步返回结果成功或者失败，如httpCode 200-300 为成功， 400-500为失败
 	$scope.login = function() {
-		UserService.authenticate($.param({username: $scope.username, password: $scope.password}), function(authenticationResult) {
-			if (authenticationResult.code == 200){
-			var authToken = authenticationResult.data.token;
-			$rootScope.authToken = authToken;
-			if ($scope.rememberMe) {
-				$cookieStore.put('authToken', authToken);
-			}
-			UserService.get(function(user) {
-				$rootScope.user = user;
-				$location.path("/");
-			});
+		UserService.authenticate($.param({
+			username : $scope.username,
+			password : $scope.password
+		}), function(authenticationResult) {
+			if (authenticationResult.code == 200) {
+				var authToken = authenticationResult.data.token;
+				$rootScope.authToken = authToken;
+				if ($scope.rememberMe) {
+					$cookieStore.put('authToken', authToken);
+				}
+				UserService.getUser(function(user) {
+					$rootScope.user = user;
+					$location.path("/");
+				}, function(){
+					$rootScope.error = 'get info failed';
+				});
 			} else {
-				$rootScope.error = authenticationResult.message + ' failed with status '
-				+ authenticationResult.code
+				$rootScope.error = authenticationResult.message
+						+ ' failed with status ' + authenticationResult.code
 			}
 		});
 	};
@@ -306,10 +325,12 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
 	$scope.lName = '';
 	$scope.passw1 = '';
 	$scope.passw2 = '';
-	
+	var name_search = null;
+	var ip_search = null;
 	$scope.edit = true;
 	$scope.error = false;
 	$scope.incomplete = false;
+	$scope.order_search = 'name_ty';
 	
    //	异步回调
 	UserService.roles(function(roles){
@@ -318,9 +339,13 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
 	
 	$scope.getUserList = function (){
 		
+		name_search = $scope.name_search;
+		ip_search = $scope.ip_search;
 		var postData = {
 				pageIndex : $scope.paginationConf.currentPage,
-				pageSize : $scope.paginationConf.itemsPerPage
+				pageSize : $scope.paginationConf.itemsPerPage,
+				name_search : name_search,
+				ip_search : ip_search
 			}
 
 			UserService.pager(postData, function(users) {
@@ -329,7 +354,6 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
 			});
 	}
 	
-
 	// 拉黑或者拉白
 	$scope.blacklist = function(id) {
 		UserService.role({
@@ -428,7 +452,7 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
     如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
     ***************************************************************/
     $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.getUserList);
- 
+    
     // 一个检测器
 	$scope.$watch('passw1', function() {
 		$scope.test();
@@ -456,7 +480,7 @@ function UserController($scope, UserService, $location, $log, $rootScope) {
 };
 
 function RegisterController($scope, $location, UserService) {
-
+    
 	$scope.user = new UserService();
 
 	$scope.register = function() {
@@ -478,7 +502,7 @@ services.factory('UserService', function($resource) {
 				authenticate: {
 					method: 'POST',
 					params: {'action' : 'authenticate'},
-					headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+					headers : {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
 				},
 				
 				register: {
@@ -512,6 +536,11 @@ services.factory('UserService', function($resource) {
 					method: 'PUT',
 					params: {'action' : 'role'},
 				},
+				
+				getUser: {
+					method: 'GET',
+					headers : {'Accept-Type': 'application/json'}
+				},
 			}
 		);
 });
@@ -529,6 +558,10 @@ services.factory('NewsService', function($resource) {
 			},
 		},
 		voter : {
+			method : 'PUT',
+		},
+		
+		stick : {
 			method : 'PUT',
 		},
 	});

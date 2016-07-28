@@ -194,3 +194,15 @@ a:link {
 	margin-top: 10px;
 	margin-left: 5px;
 }
+
+.search_cd {
+	font-size: 16px; 
+    line-height: 24px;
+	margin-right: 5px;
+	margin-left: 10px;
+}
+
+.font_st {
+	font-size: 16px; 
+    line-height: 24px;
+}

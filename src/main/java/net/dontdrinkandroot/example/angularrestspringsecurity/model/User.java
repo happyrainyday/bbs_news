@@ -18,6 +18,10 @@ public class User implements Entity{
     private Date updateDate;
     
     private Boolean black;
+    
+    private String sourceIp;
+    
+    private Date lastLoginDate;
 //    private List<UserRole> userRoleList;
 
     public User(){
@@ -75,6 +79,22 @@ public class User implements Entity{
 
 	public void setBlack(Boolean black) {
 		this.black = black;
+	}
+
+	public String getSourceIp() {
+		return sourceIp;
+	}
+
+	public void setSourceIp(String sourceIp) {
+		this.sourceIp = sourceIp;
+	}
+
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
 	}
 
 //	public List<UserRole> getUserRoleList() {

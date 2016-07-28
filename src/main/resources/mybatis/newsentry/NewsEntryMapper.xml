@@ -10,6 +10,7 @@
     <result column="page_views" property="pageViews" jdbcType="BIGINT" />
     <result column="up_votes" property="upVotes" jdbcType="BIGINT" />
     <result column="down_votes" property="downVotes" jdbcType="BIGINT" />
+    <result column="weight" property="weight" jdbcType="BIGINT"/>
   </resultMap>
   
   <resultMap type="NewsEntryUser" id="newsEntryUserMap" extends="BaseResultMap">
@@ -72,7 +73,7 @@
         FROM
           newsentry,
           user 
-        WHERE newsentry.user_id = user.id order by newsentry.date desc 
+        WHERE newsentry.user_id = user.id order by newsentry.weight desc, newsentry.date desc 
         limit
         #{pageIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
     </select>
@@ -180,6 +181,9 @@
       <if test="downVotes != null" >
         down_votes = #{downVotes,jdbcType=BIGINT},
       </if>
+       <if test="weight != null" >
+        weight = #{weight,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -190,7 +194,8 @@
       user_id = #{userId,jdbcType=BIGINT},
       page_views = #{pageViews,jdbcType=BIGINT},
       up_votes = #{upVotes,jdbcType=BIGINT},
-      down_votes = #{downVotes,jdbcType=BIGINT}
+      down_votes = #{downVotes,jdbcType=BIGINT},
+      weight = #{weight,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

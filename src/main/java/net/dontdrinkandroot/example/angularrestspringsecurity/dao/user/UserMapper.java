@@ -27,5 +27,7 @@ public interface UserMapper {
     
     List<UserAndRole> getUserPageList(Map<String, Object> map);
     
-    int getUserNum();
+    List<UserAndRole> SearchUserPageList(Map<String, Object> map);
+    
+    int getUserNum(Map<String, Object> map);
 }

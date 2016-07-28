@@ -11,7 +11,7 @@
 		<version.org.springframework>4.2.5.RELEASE</version.org.springframework>
 		<version.com.sun.jersey.contribs>1.19.1</version.com.sun.jersey.contribs>
 		<version.org.hibernate>4.2.21.Final</version.org.hibernate>
-		<org.slf4j.version>1.7.7</org.slf4j.version>
+		<org.slf4j.version>1.7.21</org.slf4j.version>
 		<javax.servlet-api.version>2.5</javax.servlet-api.version>
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
 		<org.hsqldb.version>2.3.2</org.hsqldb.version>
@@ -163,10 +163,11 @@
 		<!-- <version>${version.org.hibernate}</version> -->
 		<!-- </dependency> -->
 
+		<!-- slf4j-log4j绑定 -->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${org.slf4j.version}</version>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>${org.slf4j.version}</version>
 		</dependency>
 
 		<dependency>
@@ -232,16 +233,16 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-redis</artifactId>
-			<version>1.7.2.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId> jedis</artifactId>
-			<version>2.8.0</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.springframework.data</groupId> -->
+<!-- 			<artifactId>spring-data-redis</artifactId> -->
+<!-- 			<version>1.7.2.RELEASE</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>redis.clients</groupId> -->
+<!-- 			<artifactId>jedis</artifactId> -->
+<!-- 			<version>2.8.0</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -251,6 +252,12 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.8.0.rc2</version>
+		</dependency>
+
+		<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.17</version>
 		</dependency>
 	</dependencies>
 

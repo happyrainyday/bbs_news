@@ -22,7 +22,7 @@ public interface UserDao extends Dao<User, Long>, UserDetailsService
 	
 	public List<UserAndRole> getUserPageList(Map<String, Object> map);
 	
-	public int getUserNum();
+	public int getUserNum(Map<String, Object> map);
 	
 	public List<Roles> getRolesList();
 }

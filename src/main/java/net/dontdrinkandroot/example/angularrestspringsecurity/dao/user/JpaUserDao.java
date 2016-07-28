@@ -6,12 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.dontdrinkandroot.example.angularrestspringsecurity.AccountException;
 import net.dontdrinkandroot.example.angularrestspringsecurity.dao.role.RolesMapper;
 import net.dontdrinkandroot.example.angularrestspringsecurity.dao.role.UserRoleMapper;
 import net.dontdrinkandroot.example.angularrestspringsecurity.entity.Role;
@@ -169,8 +167,8 @@ public class JpaUserDao implements UserDao
 	 * @return
 	 */
 	@Override
-	public int getUserNum() {
-		return this.userMapper.getUserNum();
+	public int getUserNum(Map<String, Object> map) {
+		return this.userMapper.getUserNum(map);
 	}
 
 
@@ -202,6 +200,5 @@ public class JpaUserDao implements UserDao
 	public int updateByUid(User user) {
 		return this.userMapper.updateByPrimaryKeySelective(user);
 	}
-
 
 }

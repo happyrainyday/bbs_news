@@ -1,24 +1,47 @@
 <div class="page-header">
-	<h3>Users</h3>
+	<h3><span class="fa fa-users"></span>Users</h3>
 </div>
-	<table class="table altrowstable">
+
+<div class="col-md-12">
+	<p class="alert alert-info">
+		<span class="search_cd">Username:</span><input type="text" ng-model="name_search" ng-keyup="getUserList()"
+			placeholder="username" name="username"> 
+			
+			<span class="search_cd">SourceIp:</span><input type="text" ng-model="ip_search" ng-keyup="getUserList()"
+			placeholder="sourceip" name="sourceip"> 
+			
+			<span class="search_cd">
+			Sort by:</span><select ng-model="order_search">
+				<option value="name_ty">Username</option>
+				<option value="register_ty">RegisterDate</option>
+				<option value="update_ty">UpdateDate</option>
+				<option value="uid_ty">UserId</option>
+		    </select>
+<!--         <span style="margin-left: 15px;"> -->
+<!-- 		<button class="btn btn-primary" ng-click=""> -->
+<!-- 			<span class="glyphicon glyphicon-search"></span> <span class="font_st">Search</span> -->
+<!-- 		</button></span> -->
+
+	</p>
+</div>
+
+<table class="table altrowstable">
 		<thead>
 			<tr>
-				<th >序号</th>
-				<th >用户id</th>
-				<th >姓名</th>
-				<th >权限</th>
-				<th >注册时间</th>
-				<th >更新时间</th>
-				<th >拉黑/拉白</th>
-				<th >编辑</th>
-				
+				<th >UserId</th>
+				<th >Username</th>
+				<th >Permission</th>
+				<th >IP</th>
+				<th >RegisterDate</th>
+				<th >UpdateDate</th>
+				<th >Black/White</th>
+				<th >Edit</th>		
 			</tr>
 		</thead>
 		<tbody >
 			<tr ng-repeat="user in users" >
-				<td >{{ $index+1 }}</td>
-				<td >{{ user.id}}   </td>
+				
+				<td >{{ user.id }}</td>
 				<td >{{ user.name }}</td>
 				<td >
 				   <span ng-repeat="role in user.userRoleList">
@@ -28,17 +51,18 @@
                      </span>
 				   </span>
 				</td>
+				<td >{{ user.sourceIp }}</td>
 				<td >{{ user.createDate | date:'yyyy-MM-dd HH:mm:ss'}} </td>
 				<td >{{ user.updateDate |  date:'yyyy-MM-dd HH:mm:ss'}}</td>
 				<td >
-				   <a ng-if="!user.black" href="" ng-click="blacklist(user.id)" class="btn btn-xs btn-default" title="blacklist">拉黑</a>
-				   <a ng-if="user.black" href="" ng-click="whitelist(user.id)" class="btn btn-xs btn-default" title="whitelist">拉白</a>
+				   <a ng-if="!user.black" href="" ng-click="blacklist(user.id)" class="btn btn-xs btn-default" title="blacklist">black</a>
+				   <a ng-if="user.black" href="" ng-click="whitelist(user.id)" class="btn btn-xs btn-default" title="whitelist">white</a>
 				</td>
 				<td >
 <!-- 					<button class="btn" ng-click="editUser($index+1)"> -->
 <!-- 						<span class="glyphicon glyphicon-pencil"></span>编辑 -->
 <!-- 					</button> -->
-                  <a  href="" ng-click="editUser($index+1)" class="btn btn-xs btn-default" title="edit">编辑</a>
+                  <a  href="" ng-click="editUser($index+1)" class="btn btn-xs btn-default" title="edit">Edit</a>
 				</td>
 			</tr> 
 		</tbody>
@@ -52,12 +76,12 @@
 <!-- 	</div> -->
     <hr>
 	<button class="btn btn-success" ng-click="editUser('new')">
-		<span class="glyphicon glyphicon-user"></span>创建新用户
+		<span class="glyphicon glyphicon-user"></span><span class = "font_st">Create new User</span>
 	</button>
 	<hr>
 
-	<h3 ng-show="edit">创建新用户:</h3>
-	<h3 ng-hide="edit">编辑用户:</h3>
+	<h3 ng-show="edit">Create new User:</h3>
+	<h3 ng-hide="edit">Edit User:</h3>
 
    <div class="col-md-12">
 		<p class="alert alert-info">Notice: If you are the administrator , you will hava 
@@ -65,20 +89,20 @@
 	</div>
 	<form class="form-horizontal">
 		<div class="form-group">
-			<label class="col-sm-2 control-label">username:</label>
+			<label class="col-sm-2 control-label">Username:</label>
 			<div class="col-sm-10">
 				<input type="text" ng-model="username" ng-disabled="!edit"
 					placeholder="username">
 			</div>
 		</div>
 		<div class="form-group" >
-			<label class="col-sm-2 control-label">new password:</label>
+			<label class="col-sm-2 control-label">New Password:</label>
 			<div class="col-sm-10">
 				<input type="password" ng-model="passw1" placeholder="password">
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label">confirm password:</label>
+			<label class="col-sm-2 control-label">Confirm Password:</label>
 			<div class="col-sm-10">
 				<input type="password" ng-model="passw2" placeholder="password">
 			</div>
@@ -92,7 +116,7 @@
 <!-- 		</div> -->
 		
 		<div class="form-group" ng-hide="edit" >
-			<label class="col-sm-2 control-label">authority:</label>
+			<label class="col-sm-2 control-label">Authority:</label>
 			<div class="col-sm-10">
 				<select ng-model="role" ng-options="role.rolesDesc for role in roles">
                 </select>
@@ -101,11 +125,11 @@
 	</form>
     
 	<button class=" modify btn btn-success" ng-hide="edit" ng-click="modifyUserInfo(index)" ng-disabled="error || incomplete">
-		<span class="glyphicon glyphicon-save"></span><span >修改</span>
+		<span class="glyphicon glyphicon-save"></span><span class = "font_st">Modify</span>
 	</button>
 	
 	<button class=" modify btn btn-success"  ng-show="edit" ng-click="addUser()" ng-disabled="error || incomplete">
-		<span class="glyphicon glyphicon-save"><span ng-show="edit" >添加</span></span>
+		<span class="glyphicon glyphicon-save"><span ng-show="edit"  class="font_st">Add</span></span>
 	</button>
 	
 	<hr>

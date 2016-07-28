@@ -14,6 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.GenericFilterBean;
 
+import net.dontdrinkandroot.example.angularrestspringsecurity.Constant;
+import net.dontdrinkandroot.example.angularrestspringsecurity.UserUtils;
+import net.dontdrinkandroot.example.angularrestspringsecurity.entity.UserDetail;
+
 
 public class AuthenticationTokenProcessingFilter extends GenericFilterBean
 {
@@ -43,6 +47,10 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean
 				UsernamePasswordAuthenticationToken authentication =
 						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+				
+				httpRequest.setAttribute(Constant.USER_NAME_PARAM, userDetails.getUsername());
+				httpRequest.setAttribute(Constant.USER_ID_PARAM, ((UserDetail)userDetails).getUser().getId());
+				httpRequest.setAttribute(Constant.USER_IS_ADMIN, UserUtils.isAdmin());
 			}
 		}
 

@@ -24,6 +24,8 @@ public class NewsEntry implements Entity {
 
     private Long downVotes;
 
+    private Long weight;
+    
 	public Long getPageViews() {
 		return pageViews;
 	}
@@ -61,7 +63,7 @@ public class NewsEntry implements Entity {
 
 	public NewsEntry()
 	{
-		this.date = new Date();
+		
 	}
 
 
@@ -105,6 +107,16 @@ public class NewsEntry implements Entity {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+
+	public Long getWeight() {
+		return weight;
+	}
+
+
+	public void setWeight(Long weight) {
+		this.weight = weight;
 	}
 
 

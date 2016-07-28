@@ -28,7 +28,10 @@
 			date:'yyyy-MM-dd HH:mm:ss'}}</span>
 	</h4>
 	<a href="#!/edit/{{newsEntry.id}}"><p class="comment1">{{newsEntry.content
-			| limitToNum:100}}</p></a> <span class="pull-right like"><a href=""
+			| limitToNum:100}}</p></a> <span class="pull-right like">
+			<a href="" ng-click="stick(newsEntry.id)" ng-show="hasRole('ROLE_ADMIN') && newsEntry.weight==0">置顶</a>
+			<a href="" ng-click="cancelStick(newsEntry.id)" ng-show="hasRole('ROLE_ADMIN') && newsEntry.weight==100">取消置顶</a>
+			<a href=""
 		ng-click="updateUpVotes(newsEntry.id, $index)">赞</a>({{newsEntry.upVotes}})<span
 		class="vs">|</span><a href=""
 		ng-click="updateDownVotes(newsEntry.id, $index)">踩</a>({{newsEntry.downVotes}})</span>

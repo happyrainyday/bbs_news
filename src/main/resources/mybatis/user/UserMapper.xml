@@ -10,6 +10,8 @@
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="black" jdbcType="BIT" property="black" />
+    <result column="source_ip" jdbcType="BIGINT" property="sourceIp" />
+    <result column="last_login_date" jdbcType="TIMESTAMP" property="lastLoginDate" />
   </resultMap>
 
 	<resultMap id="UserAndRoleMap" type="net.dontdrinkandroot.example.angularrestspringsecurity.transfer.UserAndRole" extends="BaseResultMap">
@@ -22,7 +24,7 @@
 	</resultMap>
 	
 	  <sql id="Base_Column_List">
-    id, name, password, create_date, update_date, black
+    id, name, password, create_date, update_date, black, source_ip, last_login_date
   </sql>
 	
 	<select id="selectByUsername" resultMap="BaseResultMap"
@@ -45,28 +47,51 @@
 		userinfo.*,
 		role.roles
 		from 
-		user as userinfo, user_roles as role where userinfo.id = role.User_id
+		user as userinfo, user_roles as role 
+		<where>
+		 userinfo.id = role.User_id
+		<if test="name_search != null and name_search != ''">
+			AND userinfo.name LIKE CONCAT(CONCAT('%',
+			#{name_search,jdbcType=VARCHAR}), '%')
+		</if>
+		<if test="ip_search != null and ip_search != ''">
+			 AND userinfo.source_ip LIKE CONCAT(CONCAT('%',
+			#{ip_search,jdbcType=VARCHAR}), '%')
+		</if>
+		</where>
 		order by userinfo.create_date desc
 		limit
 		#{pageIndex,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
 	</select>
 	
     <!-- 获取总页数 -->
-	<select id="getUserNum" resultType="java.lang.Integer">
+	<select id="getUserNum" resultType="java.lang.Integer" parameterType="Map">
 		select
 		COUNT(DISTINCT(user.id)) as total_num
 		from 
 		user, 
 		user_roles
-	    where user.id = user_roles.User_id
+		
+		<where>
+		 user.id = user_roles.User_id 
+		<if test="name_search != null and name_search != ''">
+			AND user.name LIKE CONCAT(CONCAT('%',
+			#{name_search,jdbcType=VARCHAR}), '%')
+		</if>
+		<if test="ip_search != null and ip_search != ''">
+			 AND user.source_ip LIKE CONCAT(CONCAT('%',
+			#{ip_search,jdbcType=VARCHAR}), '%')
+		</if>
+		</where>
 	</select>
 	
 	<insert id="insert"
 		parameterType="User">
-		insert into user (id, name, password, create_date, black
+		insert into user (id, name, password, create_date, black, source_ip, last_login_date 
 		)
 		values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
-		#{password,jdbcType=VARCHAR}, #{createDate, jdbcType=TIMESTAMP}, #{black, jdbcType=BIT}
+		#{password,jdbcType=VARCHAR}, #{createDate, jdbcType=TIMESTAMP}, #{black, jdbcType=BIT}, #{sourceIp, jdbcType=BIGINT},
+		#{lastLoginDate, jdbcType=TIMESTAMP}
 		)
 
 		<!-- 将插入数据的主键返回，返回到user对象中 -->
@@ -108,6 +133,12 @@
       <if test="black != null">
         black,
       </if>
+      <if test="sourceIp != null">
+        source_ip,
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -127,6 +158,12 @@
       </if>
       <if test="black != null">
         #{black,jdbcType=BIT},
+      </if>
+      <if test="sourceIp != null">
+        #{sourceIp,jdbcType=BIGINT},
+      </if>
+      <if test="lastLoginDate != null">
+         #{lastLoginDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -148,6 +185,12 @@
       </if>
       <if test="black != null">
         black = #{black,jdbcType=BIT},
+      </if>
+      <if test="sourceIp != null">
+        source_ip = #{sourceIp,jdbcType=BIGINT},
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date = #{lastLoginDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -171,6 +214,12 @@
       <if test="black != null">
         black = #{black,jdbcType=BIT},
       </if>
+      <if test="sourceIp != null">
+       source_ip = #{sourceIp,jdbcType=BIGINT},
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date = #{lastLoginDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where name = #{name,jdbcType=VARCHAR}
   </update>
@@ -181,7 +230,9 @@
       password = #{password,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP},
-      black = #{black,jdbcType=BIT}
+      black = #{black,jdbcType=BIT},
+      source_ip = #{sourceIp,jdbcType=BIGINT},
+      last_login_date = #{lastLoginDate,jdbcType=TIMESTAMP},
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

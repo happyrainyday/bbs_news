@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -20,6 +19,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+//import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -41,7 +41,6 @@ import net.dontdrinkandroot.example.angularrestspringsecurity.dao.newsentry.Comm
 import net.dontdrinkandroot.example.angularrestspringsecurity.dao.newsentry.NewsEntryDao;
 import net.dontdrinkandroot.example.angularrestspringsecurity.entity.Role;
 import net.dontdrinkandroot.example.angularrestspringsecurity.model.Comments;
-import net.dontdrinkandroot.example.angularrestspringsecurity.model.NewsEntry;
 import net.dontdrinkandroot.example.angularrestspringsecurity.model.NewsEntryUser;
 import net.dontdrinkandroot.example.angularrestspringsecurity.transfer.CommentDto;
 import net.dontdrinkandroot.example.angularrestspringsecurity.transfer.CommentsVo;
@@ -54,6 +53,7 @@ public class CommentResource
 {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+//	private static Logger logger = Logger.getLogger(CommentResource.class);
 
 	@Autowired
 	private NewsEntryDao newsEntryDao;
@@ -68,7 +68,6 @@ public class CommentResource
 	@Produces(MediaType.APPLICATION_JSON)
 	public String list(@QueryParam("topicId")Long topicId, @QueryParam("replyId")Long replyId) throws JsonGenerationException, JsonMappingException, IOException
 	{
-		this.logger.info("list()--->" + topicId);
 		
 		ObjectWriter viewWriter;
 		if (this.isAdmin()) {
@@ -81,10 +80,12 @@ public class CommentResource
 		CommentsVo cvo = null;
         // List<NewsEntry> allEntries = this.newsEntryDao.findAll();
 		if (null != topicId && null == replyId){
+			this.logger.info("view the commemts of topic " + topicId);
 			allEntries = this.commentDao.getCommentsList(topicId);
 		}
 		
 		if (null == topicId && null != replyId){
+			this.logger.info("view the reply of commemt " + replyId);
 			allEntries = this.commentDao.getReplyList(replyId);
 		}
 		
@@ -154,10 +155,10 @@ public class CommentResource
 	@Path("{id}")
 	public BaseResult<?> read(@PathParam("id") Long id)
 	{
-		this.logger.info("read(id)");
 
 		Comments comments = this.commentDao.find(id);
 		if (comments == null) {
+			this.logger.warn("view the content failed");
 			throw new WebApplicationException(404);
 		}
 		
@@ -170,33 +171,27 @@ public class CommentResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	public BaseResult<?> create(CommentDto commentDto)
 	{
-		this.logger.info("create(): " + commentDto);
         
 		Comments comments = new Comments();
 		comments.setCreateDate(new Date());
 		comments.setTopicId(commentDto.getTopicId());
 		comments.setComment(commentDto.getComment());
 		comments.setUserId(commentDto.getUserId());
+		if (commentDto.getReplyId() == null){
+			this.logger.info("publish the comment --> " + commentDto.getComment());
+		} else {
+			this.logger.info("reply the comment --> " + commentDto.getComment());
+		}
 		comments.setReplyId(commentDto.getReplyId());
 		
 		int status = this.commentDao.save(comments);
 		if (status != 1){
+			if (commentDto.getReplyId() == null){
+				this.logger.error("publish the comment failed --> " + commentDto.getComment());
+			} else {
+				this.logger.error("reply the comment failed --> " + commentDto.getComment());
+			}
 			return new BaseResult<>("50000", "插入数据失败");
-		}
-		
-		return new BaseResult<>();
-	}
-
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("{id}")
-	public BaseResult<?> update(@PathParam("id") Long id, NewsEntry newsEntry)
-	{
-		this.logger.info("update(): " + newsEntry);
-		int status = this.newsEntryDao.updateNewsEntry(newsEntry);
-		if (status < 1){
-			return new BaseResult<>("50000", "更新失败");
 		}
 		
 		return new BaseResult<>();
@@ -207,19 +202,23 @@ public class CommentResource
 	@Path("{id}/{voter}")
 	public BaseResult<?> updateVoter(@PathParam("id") Long id, @PathParam("voter")String voter)
 	{
-		this.logger.info("update(): " + id + " oper: " + voter);
 		if (StringUtils.isBlank(voter)){
 			return new BaseResult<>(ErrorCodeEnum.PARAMETERS_IS_NULL_1);
 		}
 		
 		if ("up".equals(voter)){
+			this.logger.info("up vote the comment " + id);
+
 			int status = this.commentDao.updateUpVotes(id);
 			if (status < 1){
+				this.logger.error("down vote the comment " + id);
 				return new BaseResult<>("50000", "更新失败");
 			}
 		} else {
+			this.logger.info("up vote the topic " + id);
 			int status = this.newsEntryDao.updateDownVotes(id);
 			if (status < 1){
+				this.logger.error("down vote the topic " + id);
 				return new BaseResult<>("50000", "更新失败");
 			}
 		}
@@ -227,15 +226,6 @@ public class CommentResource
 		return new BaseResult<>();
 	}
 	
-	@DELETE
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("{id}")
-	public void delete(@PathParam("id") Long id)
-	{
-		this.logger.info("delete(id)");
-
-		this.newsEntryDao.delete(id);
-	}
 
 	private boolean isAdmin()
 	{

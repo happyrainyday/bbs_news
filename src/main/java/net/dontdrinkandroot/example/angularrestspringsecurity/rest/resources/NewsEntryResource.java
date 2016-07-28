@@ -2,6 +2,7 @@ package net.dontdrinkandroot.example.angularrestspringsecurity.rest.resources;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,6 @@ import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import net.dontdrinkandroot.example.angularrestspringsecurity.BaseResult;
@@ -36,9 +34,9 @@ import net.dontdrinkandroot.example.angularrestspringsecurity.Constant;
 import net.dontdrinkandroot.example.angularrestspringsecurity.ErrorCodeEnum;
 import net.dontdrinkandroot.example.angularrestspringsecurity.FormatUtils;
 import net.dontdrinkandroot.example.angularrestspringsecurity.JsonViews;
+import net.dontdrinkandroot.example.angularrestspringsecurity.UserUtils;
 import net.dontdrinkandroot.example.angularrestspringsecurity.dao.newsentry.CommentDao;
 import net.dontdrinkandroot.example.angularrestspringsecurity.dao.newsentry.NewsEntryDao;
-import net.dontdrinkandroot.example.angularrestspringsecurity.entity.Role;
 import net.dontdrinkandroot.example.angularrestspringsecurity.model.NewsEntry;
 import net.dontdrinkandroot.example.angularrestspringsecurity.model.NewsEntryUser;
 import net.dontdrinkandroot.example.angularrestspringsecurity.transfer.NewsEntryUserVo;
@@ -50,6 +48,8 @@ import net.dontdrinkandroot.example.angularrestspringsecurity.transfer.Paginatio
 public class NewsEntryResource
 {
 
+//	private static Logger logger = Logger.getLogger(CommentResource.class);
+	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -66,10 +66,9 @@ public class NewsEntryResource
 	@Produces(MediaType.APPLICATION_JSON)
 	public String list() throws JsonGenerationException, JsonMappingException, IOException
 	{
-		this.logger.info("list()");
 		
 		ObjectWriter viewWriter;
-		if (this.isAdmin()) {
+		if (UserUtils.isAdmin()) {
 			viewWriter = this.mapper.writerWithView(JsonViews.Admin.class);
 		} else {
 			viewWriter = this.mapper.writerWithView(JsonViews.User.class);
@@ -117,22 +116,13 @@ public class NewsEntryResource
 			nev.setPageViews(newsEntryUser.getPageViews());
 			nev.setUser(newsEntryUser.getUser());
 			nev.setUserId(newsEntryUser.getUserId());
+			nev.setWeight(newsEntryUser.getWeight());
 			list.add(nev);
 		}
 		pagination.setContent(list);
 		pagination.setCurrentPage(index);
 		pagination.setPageSize(size);
 		pagination.setTotalPage(this.newsEntryDao.getNewsNum());
-		
-//		ObjectWriter viewWriter;
-//		if (this.isAdmin()) {
-//			viewWriter = this.mapper.writerWithView(JsonViews.Admin.class);
-//		} else {
-//			viewWriter = this.mapper.writerWithView(JsonViews.User.class);
-//		}
-//		List<NewsEntry> allEntries = this.newsEntryDao.findAll();
-//		List<NewsEntryUser> allEntries = this.newsEntryDao.getNewsPageList(map);
-//		return viewWriter.writeValueAsString(pagination);
 		
 		return new BaseResult<>(pagination);
 	}
@@ -142,10 +132,10 @@ public class NewsEntryResource
 	@Path("{id}")
 	public NewsEntry read(@PathParam("id") Long id)
 	{
-		this.logger.info("read(id)");
-
+		this.logger.info("view the topic " + id);
 		NewsEntry newsEntry = this.newsEntryDao.find(id);
 		if (newsEntry == null) {
+			this.logger.info("view the topic failed " + id);
 			throw new WebApplicationException(404);
 		}
 		return newsEntry;
@@ -156,8 +146,8 @@ public class NewsEntryResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	public NewsEntry create(NewsEntry newsEntry)
 	{
-		this.logger.info("create(): " + newsEntry);
-        
+		this.logger.info("publish the topic --> " + newsEntry.getContent());
+		newsEntry.setDate(new Date());
 		return this.newsEntryDao.save(newsEntry);
 	}
 
@@ -167,7 +157,6 @@ public class NewsEntryResource
 	@Path("{id}")
 	public BaseResult<?> update(@PathParam("id") Long id, NewsEntry newsEntry)
 	{
-		this.logger.info("update(): " + newsEntry);
 		int status = this.newsEntryDao.updateNewsEntry(newsEntry);
 		if (status < 1){
 			return new BaseResult<>("50000", "更新失败");
@@ -178,15 +167,40 @@ public class NewsEntryResource
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("{id}/stick")
+	public BaseResult<?> stick(@PathParam("id") Long id, @QueryParam("oper")String stickType)
+	{
+		NewsEntry newsEntry = new NewsEntry();
+		newsEntry.setId(id);
+		if ("1".equals(stickType)){
+			newsEntry.setWeight(100L);
+			this.logger.info("stick the topic -> id");
+		} else {
+			newsEntry.setWeight(0L);
+			this.logger.info("cancel sticking the topic -> id");
+		}
+		
+		int status = this.newsEntryDao.updateNewsEntry(newsEntry);
+		if (status < 1){
+			return new BaseResult<>("50000", "更新失败");
+		}
+		
+		return new BaseResult<>();
+	}
+	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}/{param}")
 	public BaseResult<?> updateVoter(@PathParam("id") Long id, @PathParam("param")String param)
 	{
-		this.logger.info("update(): " + id + " oper: " + param);
+		
 		if (StringUtils.isBlank(param)){
 			return new BaseResult<>(ErrorCodeEnum.PARAMETERS_IS_NULL_1);
 		}
 		
 		if ("up".equals(param)){
+			this.logger.info("up vote the topic " + id);
 			int status = this.newsEntryDao.updateUpVotes(id);
 			if (status < 1){
 				return new BaseResult<>("50000", "更新失败");
@@ -194,6 +208,7 @@ public class NewsEntryResource
 		} 
 		
 		if ("down".equals(param)){
+			this.logger.info("down vote the topic " + id);
 			int status = this.newsEntryDao.updateDownVotes(id);
 			if (status < 1){
 				return new BaseResult<>("50000", "更新失败");
@@ -201,6 +216,7 @@ public class NewsEntryResource
 		} 
 		
         if ("pageViews".equals(param)) {
+        	this.logger.info("view the topic " + id);
 			int status = this.newsEntryDao.updatePageViews(id);
 			if (status < 1){
 				return new BaseResult<>("50000", "更新失败");
@@ -215,23 +231,12 @@ public class NewsEntryResource
 	@Path("{id}")
 	public BaseResult<?> delete(@PathParam("id") Long id)
 	{
-		this.logger.info("delete(id)");
+		this.logger.info("admin delete the topic");
 
 		this.newsEntryDao.delete(id);
 		
 		return new BaseResult<>();
 	}
 
-	private boolean isAdmin()
-	{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		if ((principal instanceof String) && ((String) principal).equals("anonymousUser")) {
-			return false;
-		}
-		UserDetails userDetails = (UserDetails) principal;
-
-		return userDetails.getAuthorities().contains(Role.ADMIN);
-	}
 
 }
