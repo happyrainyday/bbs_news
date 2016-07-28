@@ -28,9 +28,9 @@
 <!--     log4j.appender.db = org.apache.log4j.jdbc.JDBCAppender -->
 <!-- log4j.appender.db.BufferSize = 1 -->
 <!-- log4j.appender.db.driver = com.mysql.jdbc.Driver -->
-<!-- log4j.appender.db.URL = jdbc:mysql://10.0.1.50:3306/security_db?useUnicode=true&characterEncoding=utf-8 -->
+<!-- log4j.appender.db.URL = jdbc:mysql://locahost:3306/security_db?useUnicode=true&characterEncoding=utf-8 -->
 <!-- log4j.appender.db.user = root -->
-<!-- log4j.appender.db.password= taihe@123! -->
+<!-- log4j.appender.db.password= root -->
 <!-- log4j.appender.db.sql = insert into bbs_log(log_name, user_name, oper_class, oper_method, create_time, log_level, msg, source, user_type) \ -->
 <!--                         values ('%X{userid}','%X{username}','%C','%M','%d{yyyy-MM-dd HH:mm:ss}','%p','%m', '%X{source}', '%X{usertype}') -->
 <!-- log4j.appender.db.layout = org.apache.log4j.PatternLayout -->
@@ -39,10 +39,10 @@
 <!-- 	<appender name="db" class="org.apache.log4j.jdbc.JDBCAppender"> -->
 <!-- 	    <param name="driver" value="com.mysql.jdbc.Driver" /> -->
 <!-- 		<param name="url" -->
-<!-- 			value="jdbc:mysql://10.0.1.50:3306/security_db?useUnicode=true&amp;characterEncoding=utf-8" /> -->
+<!-- 			value="jdbc:mysql://locahost:3306/security_db?useUnicode=true&amp;characterEncoding=utf-8" /> -->
 		
 <!-- 		<param name="user" value="root" /> -->
-<!-- 		<param name="password" value="taihe@123!" /> -->
+<!-- 		<param name="password" value="root" /> -->
 <!-- 		<param name="sql" -->
 <!-- 			value="INSERT INTO bbs_log(log_name, user_name, oper_class, oper_method, create_time, log_level, msg, source, user_type) \ -->
 <!--                         values ('%X{userid}','%X{username}','%C','%M','%d{yyyy-MM-dd HH:mm:ss}','%p','%m', '%X{source}', '%X{usertype}')" /> -->
@@ -54,9 +54,9 @@
 	<appender name="db" class="org.apache.log4j.jdbc.JDBCAppender">
 	<param name="driver" value="com.mysql.jdbc.Driver" />
 	<param name="URL"
-		value="jdbc:mysql://10.0.1.50:3306/security_db?useUnicode=true&amp;characterEncoding=utf-8" />
+		value="jdbc:mysql://locahost:3306/security_db?useUnicode=true&amp;characterEncoding=utf-8" />
 	<param name="user" value="root" />
-	<param name="password" value="taihe@123!" />
+	<param name="password" value="root" />
 <!-- 	<param name="sql" -->
 <!-- 		value="insert into bbs_log(log_name, user_name, oper_class, oper_method, create_time, log_level, msg, source, user_type) values ('%X{userid}','%X{username}','%C','%M','%d{yyyy-MM-dd HH:mm:ss}','%p','%m', '%X{source}', '%X{usertype}')" />  -->
 	<layout class="org.apache.log4j.PatternLayout">
