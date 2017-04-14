@@ -19,3 +19,7 @@ The projects aim is to demonstrate the Java implementation of a simple REST inte
 - Jersey
 - Spring Security
 - Mybatis
+
+# Description
+
+I am based on rewriting, very grateful to the original author Philip Washington Sorst.
